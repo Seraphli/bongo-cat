@@ -1,0 +1,7 @@
+{
+    "bongoCat.installPath": "F:/Game/Steam/steamapps/common/BongoCat",
+    "files.exclude": {
+        "**/bin": true,
+        "**/obj": true
+    }
+}

@@ -1,0 +1,104 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/BongoCatMod/BongoCatMod.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "build with custom path",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/BongoCatMod/BongoCatMod.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary",
+                "/property:BongoCatDir=${input:bongoCatPath}"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "label": "build and deploy",
+            "dependsOn": "build",
+            "type": "shell",
+            "windows": {
+                "command": "Copy-Item",
+                "args": [
+                    "-Path",
+                    "${workspaceFolder}/BongoCatMod/bin/Debug/netstandard2.1/BongoCatMod.dll",
+                    "-Destination",
+                    "${config:bongoCat.installPath}/BepInEx/plugins/BongoCatMod.dll",
+                    "-Force"
+                ],
+                "options": {
+                    "shell": {
+                        "executable": "powershell.exe"
+                    }
+                }
+            },
+            "linux": {
+                "command": "cp",
+                "args": [
+                    "${workspaceFolder}/BongoCatMod/bin/Debug/netstandard2.1/BongoCatMod.dll",
+                    "${config:bongoCat.installPath}/BepInEx/plugins/BongoCatMod.dll"
+                ]
+            },
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "clean",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "${workspaceFolder}/BongoCatMod/BongoCatMod.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "restore",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "restore",
+                "${workspaceFolder}/BongoCatMod/BongoCatMod.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "bongoCatPath",
+            "type": "promptString",
+            "description": "Enter your Bongo Cat installation path",
+            "default": "C:/Program Files (x86)/Steam/steamapps/common/Bongo Cat"
+        }
+    ]
+}

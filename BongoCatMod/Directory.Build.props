@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Default path, can be overridden by environment variable or command line -->
+    <BongoCatDir Condition="'$(BongoCatDir)' == ''">F:\Game\Steam\steamapps\common\BongoCat</BongoCatDir>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,83 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build Results
+*.dll
+*.exe
+*.pdb
+*.cache
+
+# But keep the final built DLL in releases
+!releases/*.dll
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+*.nuget.props
+*.nuget.targets
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Visual Studio Code
+# .vscode/settings.json
+# .vscode/tasks.json
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Temp files
+*.tmp
+*.temp
+
+# Game-specific
+Assembly-CSharp.dll
+Assembly-CSharp-firstpass.dll
+
+# Local config (contains game path)
+BongoCatMod/Directory.Build.props.user
+
+.claude/

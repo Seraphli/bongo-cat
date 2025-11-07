@@ -1,42 +1,55 @@
 # Bongo Cat Auto Chest Opener Mod
 
-A mod for Bongo Cat that adds automatic chest opening functionality.
+A mod for Bongo Cat that adds automatic chest opening functionality and click count multiplier.
 
 ## Features
 
 - Automatic chest opening
-
-## Compatibility
-
-This mod is compatible with the specific version of Bongo Cat that has the following MD5 hash:
-
-**Target Version Hash:** `2357ABE9ADBE56BFCC53926BB78B96A7`
-
-Since Bongo Cat doesn't have version numbers, we use MD5 hash to identify the correct game version. This hash is for the `Assembly-CSharp.dll` file located in `BongoCat_Data\Managed\` directory.
-
-### How to Check Your Game Version
-
-1. Navigate to your Bongo Cat installation directory
-2. Go to `BongoCat_Data\Managed\`
-3. Generate the MD5 hash of `Assembly-CSharp.dll` using the commands below
-4. Compare the hash with the target version hash above
+- Configurable click count multiplier (default: 1x, no multiplier)
+- Easy to enable/disable via config file
+- In-game configuration UI via BepInExConfigManager
 
 ## Installation
 
-1. **Verify your game version** by checking the MD5 hash of `Assembly-CSharp.dll` (see instructions above)
-2. If the hash matches, **backup your original `Assembly-CSharp.dll`** (optional but recommended)
-3. **Replace** the original `Assembly-CSharp.dll` in `BongoCat_Data\Managed\` with the modded version from this repository
-4. Launch the game
+### Quick Install (Recommended)
+1. Download the latest release package from [Releases](https://github.com/Seraphli/bongo-cat/releases)
+2. Extract the contents directly into your Bongo Cat game directory
+   - The package includes:
+     - BepInEx framework
+     - BepInExConfigManager (for in-game config UI)
+     - BongoCatMod plugin with default configuration
+3. Launch the game and enjoy!
 
-## Uninstallation
+### Configuration
+The mod includes a pre-configured config file at `BepInEx\config\com.seraphli.bongocatmod.cfg`:
+```ini
+[General]
+## Enable automatic chest buying
+# Setting type: Boolean
+# Default value: true
+AutoBuyEnabled = true
 
-To restore the original game files:
-1. Open Steam
-2. Right-click on Bongo Cat in your library
-3. Select **Properties** > **Installed Files** > **Verify integrity of game files**
-4. Steam will automatically restore the original files
+## Multiplier for click counts (default: 1)
+# Setting type: Int32
+# Default value: 1
+ClickMultiplier = 1
+```
 
-## How to Create This Mod Yourself
+You can either:
+- Edit this config file directly with a text editor, or
+- Click on the BongoCat game window to focus it, then press **F5** to open the configuration manager UI if you need to change settings
+
+### Uninstallation
+Delete the following folders/files from your Bongo Cat directory:
+- `BepInEx/` folder
+- `doorstop_config.ini`
+- `winhttp.dll`
+
+---
+
+## Development
+
+### Building from Source
 
 If the mod hasn't been updated for a new game version, you can create it yourself by following these steps:
 
