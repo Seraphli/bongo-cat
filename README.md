@@ -20,6 +20,18 @@ A mod for Bongo Cat that adds automatic chest opening functionality and click co
      - BongoCatMod plugin with default configuration
 3. Launch the game and enjoy!
 
+### Linux Users
+If you're running the game on Linux (via Proton/Wine), you need to modify the Steam launch options:
+
+1. Right-click on Bongo Cat in your Steam library
+2. Select "Properties"
+3. In the "Launch Options" field, enter:
+   ```
+   WINEDLLOVERRIDES="winhttp=n,b" %command%
+   ```
+
+This ensures that the BepInEx winhttp.dll override is properly loaded.
+
 ### Configuration
 The mod includes a pre-configured config file at `BepInEx\config\com.seraphli.bongocatmod.cfg`:
 ```ini
