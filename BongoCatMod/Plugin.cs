@@ -143,9 +143,7 @@ namespace BongoCatMod
 
         static int GetMultiplier(int value)
         {
-            int result = value * Plugin.ClickMultiplier.Value;
-            Plugin.Logger.LogDebug($"Multiplying {value} by {Plugin.ClickMultiplier.Value} = {result}");
-            return result;
+            return value * Plugin.ClickMultiplier.Value;
         }
     }
 }
