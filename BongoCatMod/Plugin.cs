@@ -111,17 +111,31 @@ namespace BongoCatMod
             var codes = new List<CodeInstruction>(instructions);
             var multiplierMethod = AccessTools.Method(typeof(GlobalKeyHookPatch), nameof(GetMultiplier));
 
-            // Find the add instruction (the += operation) and insert multiplier before it
-            for (int i = 0; i < codes.Count; i++)
+            bool patched = false;
+
+            // Find the pattern: ldfld _keysDown, <count operation>, add, stfld _keysDown
+            // We want to insert the multiplier call between the count and the add
+            for (int i = 0; i < codes.Count - 1; i++)
             {
-                // Look for: add instruction which does the +=
-                if (codes[i].opcode == OpCodes.Add)
+                // Look for the Add opcode followed by stfld (storing to _keysDown field)
+                if (codes[i].opcode == OpCodes.Add && i + 1 < codes.Count && codes[i + 1].opcode == OpCodes.Stfld)
                 {
-                    // Insert our multiplier call right before the add
-                    // This will multiply the count result before adding it
-                    codes.Insert(i, new CodeInstruction(OpCodes.Call, multiplierMethod));
-                    break;
+                    // Check if the field being stored to is _keysDown
+                    var fieldInfo = codes[i + 1].operand as FieldInfo;
+                    if (fieldInfo != null && fieldInfo.Name == "_keysDown")
+                    {
+                        // Insert multiplier call right before the Add instruction
+                        codes.Insert(i, new CodeInstruction(OpCodes.Call, multiplierMethod));
+                        Plugin.Logger.LogInfo($"Click multiplier patch applied successfully at instruction {i}");
+                        patched = true;
+                        break;
+                    }
                 }
+            }
+
+            if (!patched)
+            {
+                Plugin.Logger.LogWarning("Failed to find injection point for click multiplier patch!");
             }
 
             return codes.AsEnumerable();
@@ -129,7 +143,9 @@ namespace BongoCatMod
 
         static int GetMultiplier(int value)
         {
-            return value * Plugin.ClickMultiplier.Value;
+            int result = value * Plugin.ClickMultiplier.Value;
+            Plugin.Logger.LogDebug($"Multiplying {value} by {Plugin.ClickMultiplier.Value} = {result}");
+            return result;
         }
     }
 }
