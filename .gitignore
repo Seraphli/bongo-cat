@@ -73,9 +73,10 @@ $RECYCLE.BIN/
 *.tmp
 *.temp
 
-# Game-specific
+# Game-specific (but allow in Resource/ for CI builds)
 Assembly-CSharp.dll
 Assembly-CSharp-firstpass.dll
+!Resource/Assembly-CSharp.dll
 
 # Local config (contains game path)
 BongoCatMod/Directory.Build.props.user

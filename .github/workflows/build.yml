@@ -1,0 +1,105 @@
+name: Build BongoCatMod
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'BongoCatMod/**'
+      - '.github/workflows/build.yml'
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ created ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Get BepInEx latest release
+      id: bepinex
+      run: |
+        LATEST_RELEASE=$(curl -s https://api.github.com/repos/BepInEx/BepInEx/releases/latest | jq -r '.tag_name')
+        echo "version=$LATEST_RELEASE" >> $GITHUB_OUTPUT
+
+        # Find the Windows x64 asset
+        DOWNLOAD_URL=$(curl -s https://api.github.com/repos/BepInEx/BepInEx/releases/latest | \
+          jq -r '.assets[] | select(.name | contains("win_x64")) | .browser_download_url')
+
+        echo "download_url=$DOWNLOAD_URL" >> $GITHUB_OUTPUT
+        echo "BepInEx version: $LATEST_RELEASE"
+        echo "Download URL: $DOWNLOAD_URL"
+
+    - name: Download BepInEx
+      run: |
+        wget -O bepinex.zip "${{ steps.bepinex.outputs.download_url }}"
+        unzip -q bepinex.zip -d bepinex_temp
+
+    - name: Modify doorstop_config.ini
+      run: |
+        CONFIG_FILE="bepinex_temp/doorstop_config.ini"
+        if [ -f "$CONFIG_FILE" ]; then
+          sed -i 's|^dll_search_path_override.*|dll_search_path_override = unstripped_corlib|' "$CONFIG_FILE"
+          echo "Modified doorstop_config.ini:"
+          grep "dll_search_path_override" "$CONFIG_FILE"
+        else
+          echo "Warning: doorstop_config.ini not found!"
+        fi
+
+    - name: Extract unstripped_corlib
+      run: |
+        unzip -q Resource/unstripped_corlib.zip -d bepinex_temp/
+
+    - name: Get mod version
+      id: mod_version
+      run: |
+        VERSION=$(grep -oP '<Version>\K[^<]+' BongoCatMod/BongoCatMod.csproj)
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Mod version: $VERSION"
+
+    - name: Build BongoCatMod
+      run: |
+        # Note: Assembly-CSharp.dll is not required for compilation
+        # The mod uses Harmony's runtime reflection (AccessTools) to patch game code
+        dotnet restore BongoCatMod/BongoCatMod.csproj
+        dotnet build BongoCatMod/BongoCatMod.csproj -c Release --no-restore
+
+    - name: Package release
+      run: |
+        # Copy mod DLL to plugins folder
+        mkdir -p bepinex_temp/BepInEx/plugins
+        cp BongoCatMod/bin/Release/netstandard2.1/BongoCatMod.dll bepinex_temp/BepInEx/plugins/
+
+        # Create release package with version
+        cd bepinex_temp
+        zip -r ../BongoCatMod-v${{ steps.mod_version.outputs.version }}.zip .
+        cd ..
+
+        echo "Package contents:"
+        unzip -l BongoCatMod-v${{ steps.mod_version.outputs.version }}.zip | head -20
+
+    - name: Upload release package as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: BongoCatMod-v${{ steps.mod_version.outputs.version }}
+        path: BongoCatMod-v${{ steps.mod_version.outputs.version }}.zip
+
+    - name: Upload to Release
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: BongoCatMod-v${{ steps.mod_version.outputs.version }}.zip
+        asset_name: BongoCatMod-v${{ steps.mod_version.outputs.version }}.zip
+        asset_content_type: application/zip
